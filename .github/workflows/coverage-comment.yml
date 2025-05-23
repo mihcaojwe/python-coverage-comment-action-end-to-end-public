@@ -1,0 +1,25 @@
+name: Post coverage comment
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  test:
+    name: Publish coverage Comment
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    permissions:
+      actions: read
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Post comment
+        uses: py-cov-action/python-coverage-comment-action@a15b395564cc9a9a3491b0256b2f558268ec30cc
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+          COVERAGE_PATH: subdir
+          SUBPROJECT_ID: "my-great-project"
